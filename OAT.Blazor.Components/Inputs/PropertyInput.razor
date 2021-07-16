@@ -2,13 +2,13 @@
 {
     @if (Helpers.IsNullable(type))
     {
-        <div class="form-check form-check-inline">
+        <div class="form-check form-check-inline ml-2">
             <input class="form-check-input" type="checkbox" id="@id" @bind="IsNull" />
             <label class="form-check-label" for="@id">Set to Null</label>
         </div>
     }
 
-    if (!IsNull)
+    @if (!IsNull)
     {
         @if (type.Equals(typeof(string)))
         {
@@ -26,11 +26,11 @@
         {
             if (type.IsDefined(typeof(FlagsAttribute), false))
             {
-                <FlagsInput id="@id" Object="Object" SubPath="@SubPath" />
+                <FlagsInput id="@id" Object="Object" SubPath="@SubPath" type="@type" />
             }
             else
             {
-                <EnumInput id="@id" Object="Object" SubPath="@SubPath" />
+                <EnumInput id="@id" Object="Object" SubPath="@SubPath" type="@type" />
             }
         }
         else if (type.Equals(typeof(DateTime)))
@@ -119,18 +119,16 @@
 
     object? oldValue = null;
 
-    bool _IsNull = false;
 
     public bool IsNull
     {
         get
         {
-            return _IsNull;
+            return Helpers.GetValueByPropertyOrFieldName(Object, SubPath) is null;
         }
         set
         {
-            _IsNull = value;
-            if (_IsNull || type == null)
+            if (value is true)
             {
                 oldValue = Helpers.GetValueByPropertyOrFieldName(Object, SubPath);
                 Helpers.SetValueByPropertyOrFieldName(Object, SubPath, null);
